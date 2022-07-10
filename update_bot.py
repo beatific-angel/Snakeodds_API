@@ -23,3 +23,14 @@ from multiprocessing import Process
 import mysql.connector
 from datetime import datetime, timedelta
 import base64
+
+
+def getConnection():
+    mydb = mysql.connector.connect(
+        host="178.62.242.69",
+        user="root",
+        password="qazQAZ123@@",
+        database="betting"
+    )
+    return mydb
+
