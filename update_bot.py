@@ -34,3 +34,11 @@ def getConnection():
     )
     return mydb
 
+
+url = 'https://www.finderbet.it/surebet'
+url2 = 'https://www.finderbet.it/valuebet'
+url3 = 'https://www.finderbet.it/exchange'
+login_url = 'https://www.finderbet.it/login/'
+saveurl = 'https://www.finderbet.it/account/?action=profile-filtri'
+
+
