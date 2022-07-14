@@ -42,3 +42,17 @@ login_url = 'https://www.finderbet.it/login/'
 saveurl = 'https://www.finderbet.it/account/?action=profile-filtri'
 
 
+
+
+chromeOptions = webdriver.ChromeOptions()
+#adding specific Chrome Profile Path
+chromeOptions.add_argument("user-data-dir=C:\\Users\\sh225\\AppData\\Local\\Google\\Chrome Beta\\User Data\\\Default")
+#set chromedriver.exe path
+chromeOptions.add_argument("--headless")
+chromeOptions.add_argument("--disable-gpu")
+chromeOptions.add_argument("--no-sandbox")
+chromeOptions.binary_location = "C:/Program Files/Google/Chrome Beta/Application/chrome.exe"
+driver = webdriver.Chrome(executable_path="chromedriver.exe", options=chromeOptions)
+#maximize browser
+driver.set_window_size(1366, 768)
+
