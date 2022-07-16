@@ -56,3 +56,9 @@ driver = webdriver.Chrome(executable_path="chromedriver.exe", options=chromeOpti
 #maximize browser
 driver.set_window_size(1366, 768)
 
+
+print('Sucessfully the webdriver runned.')
+
+user_email = "filomenasalaris375@gmail.com"
+password = "Gimbo123"
+
