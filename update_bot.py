@@ -62,3 +62,21 @@ print('Sucessfully the webdriver runned.')
 user_email = "filomenasalaris375@gmail.com"
 password = "Gimbo123"
 
+
+def login():
+    print("login")
+    driver.get(login_url)
+    time.sleep(1)
+
+    driver.find_element_by_id('user_login').send_keys(user_email)
+    driver.find_element_by_id('user_pass').send_keys(password)
+    visibilitytag = driver.find_elements_by_xpath('//div[contains(@class, "grecaptcha-badge")]')
+    if visibilitytag[0].is_displayed():
+        if (len(driver.find_elements_by_xpath('//div[contains(@class, "grecaptcha-logo")]'))) > 0:
+            solver = TwoCaptcha('aacf25b9da54ec379de9c1d4c4aee92c')
+            element = driver.find_elements_by_xpath('//div[contains(@class, "grecaptcha-logo")]')
+            sitekeyurl = element[0].find_element_by_xpath('//iframe').get_attribute("src")
+            parsed_url = urlparse(sitekeyurl)
+            keygetparam = parse_qs(parsed_url.query)
+            print(keygetparam)
+            getsitekey = keygetparam['k']
