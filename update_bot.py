@@ -80,3 +80,22 @@ def login():
             keygetparam = parse_qs(parsed_url.query)
             print(keygetparam)
             getsitekey = keygetparam['k']
+            sitekey = getsitekey[0]
+            while 1:
+                try:
+                    result = solver.solve_captcha(sitekey, driver.current_url)
+                except Exception as e:
+                    print(str(e))
+                else:
+                    print('solved: ' + str(result))
+                    break
+
+            driver.execute_script('document.getElementById("g-recaptcha-response-100000").innerHTML = "%s"' % result)
+            try:
+                # driver.find_element_by_xpath('//button[@type="submit" and contains(@class, "btn-submit")]').click()
+                driver.find_element_by_xpath('//form[@id="wp-submit"]').submit()
+            except:
+                pass
+
+            time.sleep(1)
+ 
