@@ -98,4 +98,12 @@ def login():
                 pass
 
             time.sleep(1)
- 
+    else:
+        driver.find_element_by_xpath('//input[@id="wp-submit"]').click()
+        time.sleep(3)
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="nav-menu-item-4846"]')))
+
+
+def unserialize_array(serialized_array):
+    return dict(enumerate(re.findall(r'"((?:[^"\\]|\\.)*)"', serialized_array)))
+
