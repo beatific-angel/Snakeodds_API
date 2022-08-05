@@ -107,3 +107,18 @@ def login():
 def unserialize_array(serialized_array):
     return dict(enumerate(re.findall(r'"((?:[^"\\]|\\.)*)"', serialized_array)))
 
+
+def get_online_users():
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM users AS e INNER JOIN paypal_subscriptions AS u ON e.id = u.user_id WHERE e.login_status='1' and (u.status = 'ACTIVE' or ( u.status = 'CANCELLED' AND now() < u.end_at ))"
+    # "SELECT * FROM users where login_status ='1' and subscription_status = 'ACTIVE' "
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+    mycursor.close()
+    mydb.close()
+    if len(myresult) > 0:
+        return myresult
+    else:
+        return True
+
