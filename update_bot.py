@@ -122,3 +122,16 @@ def get_online_users():
     else:
         return True
 
+
+def get_focus(userid):
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM users WHERE id = '{}'".format(userid)
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+    mycursor.close()
+    mydb.close()
+    if len(myresult) > 0:
+        return myresult
+    else:
+        return True
