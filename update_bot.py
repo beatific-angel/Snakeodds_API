@@ -135,3 +135,20 @@ def get_focus(userid):
         return myresult
     else:
         return True
+
+
+def get_bk_lists(userid, filtertype):
+    if (userid != ''):
+        if (filtertype == 'prematch'):
+            mydb = getConnection()
+            mycursor = mydb.cursor()
+            sql = "SELECT * FROM filterlists WHERE userid = '{}' and filtertype = 'prematch' and check_status = '1'".format(
+                userid)
+            mycursor.execute(sql)
+            myresult = mycursor.fetchall()
+            mycursor.close()
+            mydb.close()
+            if len(myresult) > 0:
+                return myresult
+            else:
+                return True
