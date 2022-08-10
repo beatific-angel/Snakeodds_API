@@ -152,3 +152,34 @@ def get_bk_lists(userid, filtertype):
                 return myresult
             else:
                 return True
+
+        elif (filtertype == 'valuebet'):
+            mydb = getConnection()
+            mycursor = mydb.cursor()
+            sql = "SELECT * FROM filterlists WHERE userid = '{}' and filtertype = 'valuebet' and check_status = '1'".format(
+                userid)
+            mycursor.execute(sql)
+            myresult = mycursor.fetchall()
+            mycursor.close()
+            mydb.close()
+            if len(myresult) > 0:
+                return myresult
+            else:
+                return True
+
+        elif (filtertype == 'oddsmatcher'):
+            mydb = getConnection()
+            mycursor = mydb.cursor()
+            sql = "SELECT * FROM filterlists WHERE userid = '{}' and filtertype = 'oddsmatcher' and check_status = '1'".format(
+                userid)
+            mycursor.execute(sql)
+            myresult = mycursor.fetchall()
+            mycursor.close()
+            mydb.close()
+            if len(myresult) > 0:
+                return myresult
+            else:
+                return True
+    else:
+        return True
+
