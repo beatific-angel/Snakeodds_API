@@ -204,3 +204,24 @@ def set_surebet_main(surebet_lists):
             print('f', f'set_surebet Exception: {repr(e)}')
     cursor.close()
 
+
+def set_surebet_child(alt_surebet_lists):
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    sql = 'INSERT INTO finder_surebets_child (surebet_id, cha_id, percent, sport,event_name, group_name, bet_time, bet1_event_name, \
+        bet1_group_name, bet_bk1, bet_desc1, bet_market_val1, bet_koef1,bet2_event_name, bet2_group_name, bet_bk2, bet_desc2, bet_market_val2, bet_koef2,bet3_event_name, \
+            bet3_group_name, bet_bk3, bet_desc3, bet_market_val3, bet_koef3, parent_id, created_at, updated_at) ' \
+          'VALUES (%s, %s,%s, %s,%s, %s,%s, %s, %s,%s, %s,%s, %s,%s, %s,%s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s) ON DUPLICATE KEY UPDATE cha_id=VALUES(cha_id), \
+                percent=VALUES(percent),sport=VALUES(sport),event_name=VALUES(event_name),group_name=VALUES(group_name), \
+                bet_time=VALUES(bet_time),bet1_event_name=VALUES(bet1_event_name),bet1_group_name=VALUES(bet1_group_name),bet_bk1=VALUES(bet_bk1),bet_desc1=VALUES(bet_desc1),bet_market_val1=VALUES(bet_market_val1), \
+                bet_koef1=VALUES(bet_koef1),bet2_event_name=VALUES(bet2_event_name),bet2_group_name=VALUES(bet2_group_name),bet_bk2=VALUES(bet_bk2),bet_desc2=VALUES(bet_desc2),bet_market_val2=VALUES(bet_market_val2), \
+                bet_koef2=VALUES(bet_koef2),bet3_event_name=VALUES(bet3_event_name),bet3_group_name=VALUES(bet3_group_name),bet_bk3=VALUES(bet_bk3),bet_desc3=VALUES(bet_desc3),bet_market_val3=VALUES(bet_market_val3), \
+                bet_koef3=VALUES(bet_koef3),updated_at=VALUES(updated_at) ;'
+    with mycursor as cursor:
+        try:
+            cursor.executemany(sql, alt_surebet_lists)
+            mydb.commit()
+        except Exception as e:
+            print('f', f'set_surebet Exception: {repr(e)}')
+    cursor.close()
+
