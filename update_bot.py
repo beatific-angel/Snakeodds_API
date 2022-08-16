@@ -225,3 +225,63 @@ def set_surebet_child(alt_surebet_lists):
             print('f', f'set_surebet Exception: {repr(e)}')
     cursor.close()
 
+
+def set_valuebet_main(val_params):
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    # sql = 'INSERT INTO valuebets (valuebet_id,cha_id, percent, sport,event_name, group_name, bet_time, bet_bk, bet_market_val, bet_koef, bet_desc, created_at, updated_at) ' \
+    #       'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE percent=VALUES(percent), \
+    #             sport=VALUES(sport),event_name=VALUES(event_name),group_name=VALUES(group_name), \
+    #             bet_time=VALUES(bet_time),bet_bk=VALUES(bet_bk),bet_market_val=VALUES(bet_market_val), \
+    #             bet_koef=VALUES(bet_koef),bet_desc=VALUES(bet_desc),updated_at=VALUES(updated_at) ;'
+
+    sql = "INSERT INTO valuebets (valuebet_id,cha_id, percent, sport,event_name, group_name, bet_time, bet_bk, bet_market_val, bet_koef, bet_desc, created_at, updated_at)\
+            VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(\
+                val_params[0],val_params[1],val_params[2],val_params[3],val_params[4],val_params[5],val_params[6],val_params[7]\
+                ,val_params[8],val_params[9],val_params[10],val_params[11],val_params[12])                
+    mycursor.execute(sql)
+    mydb.commit()
+    mycursor.close()
+
+
+def set_exchange_main(exchange_lists):
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    sql = 'INSERT INTO finder_exchangelists (exchange_id, cha_id, percent, sport,event_name, group_name, bet_time, evento_book, \
+            gruppo_book, nome_book, valore_book, hash_id_book, sigla_hash_book,desc_hash_book, datetime_book, url_desktop_book, evento_exchange, gruppo_exchange, \
+            url_desktop_exchange,book_exchange, nome_exchange, valore_exchange, hash_id_exchange, sigla_hash_exchange, desc_hash_exchange, tipo_exchange, \
+            desc_tipo, datetime_exchange, created_at, updated_at) ' \
+            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+                percent=VALUES(percent),sport=VALUES(sport),event_name=VALUES(event_name),group_name=VALUES(group_name), \
+                bet_time=VALUES(bet_time),evento_book=VALUES(evento_book),gruppo_book=VALUES(gruppo_book),nome_book=VALUES(nome_book),valore_book=VALUES(valore_book),hash_id_book=VALUES(hash_id_book), \
+                sigla_hash_book=VALUES(sigla_hash_book),desc_hash_book=VALUES(desc_hash_book),datetime_book=VALUES(datetime_book),url_desktop_book=VALUES(url_desktop_book),evento_exchange=VALUES(evento_exchange),gruppo_exchange=VALUES(gruppo_exchange), \
+                url_desktop_exchange=VALUES(url_desktop_exchange),book_exchange=VALUES(book_exchange),nome_exchange=VALUES(nome_exchange),valore_exchange=VALUES(valore_exchange),hash_id_exchange=VALUES(hash_id_exchange),sigla_hash_exchange=VALUES(sigla_hash_exchange), \
+                desc_hash_exchange=VALUES(desc_hash_exchange),tipo_exchange=VALUES(tipo_exchange),desc_tipo=VALUES(desc_tipo),datetime_exchange=VALUES(datetime_exchange),updated_at=VALUES(updated_at) ;'
+    with mycursor as cursor:
+        try:
+            cursor.executemany(sql, exchange_lists)
+            mydb.commit()
+        except Exception as e:
+            print('f', f'set_exchange Exception: {repr(e)}')
+    cursor.close()    
+
+def set_exchange_child(alt_exchange_childlists):
+    mydb = getConnection()
+    mycursor = mydb.cursor()
+    sql = 'INSERT INTO finder_exchange_childlists (exchange_id, cha_id, parent_id, percent, sport,event_name, group_name, bet_time, evento_book, \
+            gruppo_book, nome_book, valore_book, hash_id_book, sigla_hash_book,desc_hash_book, datetime_book, url_desktop_book, evento_exchange, gruppo_exchange, \
+            url_desktop_exchange,book_exchange, nome_exchange, valore_exchange, hash_id_exchange, sigla_hash_exchange, desc_hash_exchange, tipo_exchange, \
+            desc_tipo, datetime_exchange, created_at, updated_at) ' \
+            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+                percent=VALUES(percent),sport=VALUES(sport),event_name=VALUES(event_name),group_name=VALUES(group_name), \
+                bet_time=VALUES(bet_time),evento_book=VALUES(evento_book),gruppo_book=VALUES(gruppo_book),nome_book=VALUES(nome_book),valore_book=VALUES(valore_book),hash_id_book=VALUES(hash_id_book), \
+                sigla_hash_book=VALUES(sigla_hash_book),desc_hash_book=VALUES(desc_hash_book),datetime_book=VALUES(datetime_book),url_desktop_book=VALUES(url_desktop_book),evento_exchange=VALUES(evento_exchange),gruppo_exchange=VALUES(gruppo_exchange), \
+                url_desktop_exchange=VALUES(url_desktop_exchange),book_exchange=VALUES(book_exchange),nome_exchange=VALUES(nome_exchange),valore_exchange=VALUES(valore_exchange),hash_id_exchange=VALUES(hash_id_exchange),sigla_hash_exchange=VALUES(sigla_hash_exchange), \
+                desc_hash_exchange=VALUES(desc_hash_exchange),tipo_exchange=VALUES(tipo_exchange),desc_tipo=VALUES(desc_tipo),datetime_exchange=VALUES(datetime_exchange),updated_at=VALUES(updated_at) ;'
+    with mycursor as cursor:
+        try:
+            cursor.executemany(sql, alt_exchange_childlists)
+            mydb.commit()
+        except Exception as e:
+            print('f', f'set_exchange Exception: {repr(e)}')
+    cursor.close()  
