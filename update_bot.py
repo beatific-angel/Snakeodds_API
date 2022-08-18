@@ -285,3 +285,27 @@ def set_exchange_child(alt_exchange_childlists):
         except Exception as e:
             print('f', f'set_exchange Exception: {repr(e)}')
     cursor.close()  
+
+def init():
+    login()
+
+
+def surebet_get_data(s, request_cookies_browser, userid, bookie_id_lists, bstart):
+    # go to filter page and save filters
+    driver.get(saveurl)
+    WebDriverWait(driver, 120).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="mepr-account-payments"]')))
+    filtertype = 'prematch'
+    mepr_nonce = driver.find_element_by_xpath('//input[@id="mepr_profile-filtri_nonce"]').get_attribute('value')
+    filtersavedata = {
+        'mepr-process-profile-filtri': 'Y',
+        'mepr_profile-filtri_nonce': mepr_nonce,
+        '_wp_http_referer': '/account/?action=profile-filtri',
+        'importo_default':'100',
+        'arrotontamento_dafault': '1',
+        'bookmakers[]': [bookie_id_lists],
+        'sports[]': [2,1,4,5,23]
+    }
+    driver.delete_cookie('__cf_bm')
+    driver.delete_cookie('wfwaf-authcookie-71f47a747fbb7b6570a859ec7a006d6d')
+    driver.delete_cookie('wordpress_sec_165b92c533db78e0b8c7972d9effad21')
+    while True:
