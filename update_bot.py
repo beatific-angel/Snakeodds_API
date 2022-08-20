@@ -309,3 +309,30 @@ def surebet_get_data(s, request_cookies_browser, userid, bookie_id_lists, bstart
     driver.delete_cookie('wfwaf-authcookie-71f47a747fbb7b6570a859ec7a006d6d')
     driver.delete_cookie('wordpress_sec_165b92c533db78e0b8c7972d9effad21')
     while True:
+        event_url = f'https://www.finderbet.it/account/?action=profile-filtri'
+        
+        response = s.post(event_url, data=filtersavedata)
+        if response.status_code == 200:          
+            break
+        else:
+            print(response.status_code, response.text)
+
+    time.sleep(2)
+    driver.get('https://www.finderbet.it/')
+    time.sleep(1)
+    request_cookies_browser = driver.get_cookies()
+    # go to surebet page
+    driver.get(url)
+    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="action-set-filtri_nonce"]')))
+    nonce_site = driver.find_element_by_id("action-set-filtri_nonce").get_attribute('value')
+
+    wp_nonce_string = driver.find_element_by_xpath('//script[@id="wp-api-request-js-extra"]').get_attribute('innerHTML')
+    wp_nonce_temp = wp_nonce_string.split('"')
+    wp_nonce = wp_nonce_temp[7]
+    cookie_cnt = len(request_cookies_browser)
+    header_cookie = ''
+    for i in range(cookie_cnt):
+        header_cookie += request_cookies_browser[i]['name'] + '=' + request_cookies_browser[i]['value'] + '; '
+
+    get_surebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie, userid, filtertype)
+
