@@ -336,3 +336,31 @@ def surebet_get_data(s, request_cookies_browser, userid, bookie_id_lists, bstart
 
     get_surebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie, userid, filtertype)
 
+
+def get_surebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie, userid, filtertype):
+    print('surebet loop started')
+    surebet_lists = []
+    alt_surebet_lists = []
+    headers = {
+        "x-wp-nonce": wp_nonce,
+        "cookie": header_cookie
+    }
+    while True:
+        s = requests.Session()
+        cnt_bk_lists = len(bookie_id_lists)
+        bk_url_header = ''
+        for m in range(cnt_bk_lists):
+            bk_url_header += f'&bookmakers[]={bookie_id_lists[m]}'
+
+        event_url = f'https://www.finderbet.it/wp-json/bet/v1/getItems?surebet_do_set_filter=YEPPA&action-set-filtri_nonce={nonce_site}&_wp_http_referer=/surebet/{bk_url_header}&data_evento_da=&data_evento_a=&profitto_min=0&puntate=tutti&orderBy=profitto&order=desc&page=1'
+
+        response = s.get(event_url, headers=headers)
+        if response.status_code == 200:
+            break
+        else:
+            print(response.status_code, response.text)
+    result = response.json()
+    bet_items = result['items']
+    decrypt_item_res = base64.b64decode(bet_items)
+    items = decrypt_item_res.decode()
+    surebet_result = json.loads(items)
