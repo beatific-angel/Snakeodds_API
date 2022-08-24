@@ -364,3 +364,184 @@ def get_surebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie,
     decrypt_item_res = base64.b64decode(bet_items)
     items = decrypt_item_res.decode()
     surebet_result = json.loads(items)
+
+    if len(surebet_result) > 0:
+       
+        for i in range(len(surebet_result)):
+            bookie_lists_tp = get_bk_lists(userid, filtertype)
+            if bookie_lists_tp != True:
+                unique_list_tp = []
+                bookie_id_lists_tp = []
+                for bookie_lists_tp_cel in bookie_lists_tp:
+                    processing_bklists_tp = bookie_lists_tp_cel[4]
+                    processing_bklists_tp = unserialize_array(
+                        processing_bklists_tp)
+                    for k, v in processing_bklists_tp.items():
+                        v = int(v)
+                        unique_list_tp.append(v)
+                for x in unique_list_tp:
+                    if x not in bookie_id_lists_tp:
+                        bookie_id_lists_tp.append(x)
+                bookie_id_lists_tp.sort()
+                if np.array_equiv(bookie_id_lists_tp, bookie_id_lists) == True:
+                    selected_ele = surebet_result[i]
+                    surebet_id = selected_ele['bet_id']
+                    cha_id = selected_ele['cha_id']
+                    percent = selected_ele['valore_surebet']
+
+                    group_name = selected_ele['gruppo_evento']
+                    event_name = selected_ele['nome_evento']
+                    bet_time = selected_ele['datetime']
+                    sport = selected_ele['sport']
+                    formula_id = selected_ele['formula_id']
+                    timestamp = selected_ele['timestamp']
+                    created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                    updated_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+                    bet_cnt = len(selected_ele['bookmakers'])
+                    bookmakers = selected_ele['bookmakers']
+                    bet_koef1 = bookmakers[0]['value']
+                    bet_bk1 = bookmakers[0]['bname']
+                    bet_market_val1 = bookmakers[0]['sigla']
+                    bet_desc1 = bookmakers[0]['desc']
+                    bet_koef2 = bookmakers[1]['value']
+                    bet_bk2 = bookmakers[1]['bname']
+                    bet_market_val2 = bookmakers[1]['sigla']
+                    bet_desc2 = bookmakers[1]['desc']
+                    if bet_cnt == 2:
+                        bet_koef3 = ' '
+                        bet_bk3 = ' '
+                        bet_market_val3 = ' '
+                        bet_desc3 = ''
+                    elif bet_cnt == 3:
+                        bet_koef3 = bookmakers[2]['value']
+                        bet_bk3 = bookmakers[2]['bname']
+                        bet_market_val3 = bookmakers[2]['sigla']
+                        bet_desc3 = bookmakers[2]['desc']
+
+                    while True:
+                        event_url = f'https://www.finderbet.it/wp-json/bet/v1/getItem/{surebet_id}'
+                        response = s.post(event_url, headers=headers)
+                        if response.status_code == 200:
+                            break
+                        else:
+                            print(response.status_code, response.text)
+                    post_result = response.json()
+                    post_data = post_result['data']
+                    post_data_decrypt = base64.b64decode(post_data)
+                    postitems = post_data_decrypt.decode()
+                    each_bets_res = json.loads(postitems)
+                    cnt_bets = len(each_bets_res)
+
+                    bet1_event_name = each_bets_res[0]['gruppo_evento']
+                    bet1_group_name = each_bets_res[0]['nome_evento']
+                    bet2_event_name = each_bets_res[1]['gruppo_evento']
+                    bet2_group_name = each_bets_res[1]['nome_evento']
+
+                    if cnt_bets == 2:
+                        bet3_event_name = ' '
+                        bet3_group_name = ' '
+                    elif cnt_bets == 3:
+                        bet3_event_name = each_bets_res[2]['gruppo_evento']
+                        bet3_group_name = each_bets_res[2]['nome_evento']
+
+                    main_params = (surebet_id, cha_id, percent, sport, event_name, group_name, bet_time, \
+                                   bet1_event_name, bet1_group_name, bet_bk1, bet_desc1, bet_market_val1, bet_koef1,
+                                   bet2_event_name,
+                                   bet2_group_name, bet_bk2, bet_desc2, \
+                                   bet_market_val2, bet_koef2, bet3_event_name, bet3_group_name, bet_bk3, bet_desc3,
+                                   bet_market_val3,
+                                   bet_koef3, created_at, updated_at)
+                    surebet_lists.append(main_params)
+                else:
+                    return
+            else:
+                return
+        set_surebet_main(surebet_lists)
+
+        for i in range(len(surebet_result)):
+            selected_ele = surebet_result[i]
+            surebet_id = selected_ele['bet_id']
+            cha_id = selected_ele['cha_id']
+            formula_id = selected_ele['formula_id']
+            timestamp = selected_ele['timestamp']
+            postdata = {
+                'surebet_do_set_filter': 'NOPE',
+                'action-set-filtri_nonce': nonce_site,
+                '_wp_http_referer': '/surebet/',
+                'data_evento_da': '',
+                'data_evento_a': '',
+                'profitto_min': 0,
+                'puntate': 'tutti',
+                'surebet_id': surebet_id,
+                'cha_id': cha_id,
+                'formula_id': formula_id,
+                'timestamp': timestamp
+            }
+            s.headers = headers
+
+            while True:
+                event_url = f'https://www.finderbet.it/wp-json/bet/v1/getClosestItemsCount'
+                response = s.post(event_url, json=postdata)
+                if response.status_code == 200:
+                    break
+                else:
+                    print(response.status_code, response.text)
+            child_result = response.json()
+            child_data = child_result['data']
+            child_data_decrypt = base64.b64decode(child_data)
+            childitems = child_data_decrypt.decode()
+            childlists = json.loads(childitems)
+            cnt_childlists = len(childlists)
+            if cnt_childlists > 0:
+                parent_id = surebet_id
+                for i in range(cnt_childlists):
+                    if i < 3:
+                        child_item = childlists[i]
+                        csurebet_id = child_item['bet_id']
+                        cpercent = child_item['valore_surebet']
+                        cgroup_name = child_item['gruppo_evento']
+                        cevent_name = child_item['nome_evento']
+                        csport = child_item['sport']
+                        ccha_id = child_item['cha_id']
+                        cbet_time = child_item['datetime']
+                        child_bookmakers = child_item['bookmakers']
+                        child_bk_cnt = len(child_bookmakers)
+                        cbet_bk1 = child_bookmakers[0]['bname']
+                        cbet_koef1 = child_bookmakers[0]['value']
+                        cbet_market_val1 = child_bookmakers[0]['sigla']
+                        cbet_desc1 = child_bookmakers[0]['desc']
+                        cbet_bk2 = child_bookmakers[1]['bname']
+                        cbet_koef2 = child_bookmakers[1]['value']
+                        cbet_market_val2 = child_bookmakers[1]['sigla']
+                        cbet_desc2 = child_bookmakers[1]['desc']
+
+                        if child_bk_cnt == 2:
+                            cbet_koef3 = ' '
+                            cbet_bk3 = ' '
+                            cbet_market_val3 = ' '
+                            cbet_desc3 = ' '
+                        else:
+                            cbet_koef3 = child_bookmakers[2]['value']
+                            cbet_bk3 = child_bookmakers[2]['bname']
+                            cbet_market_val3 = child_bookmakers[2]['sigla']
+                            cbet_desc3 = child_bookmakers[2]['desc']
+
+                        created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                        updated_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+                        right_params = (
+                            csurebet_id, ccha_id, cpercent, csport, cevent_name, cgroup_name, cbet_time, \
+                            cevent_name, cgroup_name, cbet_bk1, cbet_desc1, cbet_market_val1, cbet_koef1,
+                            cevent_name,
+                            cgroup_name, cbet_bk2, cbet_desc2, \
+                            cbet_market_val2, cbet_koef2, cevent_name, cgroup_name, cbet_bk3, cbet_desc3,
+                            cbet_market_val3,
+                            cbet_koef3, parent_id, created_at, updated_at)
+                        alt_surebet_lists.append(right_params)
+        set_surebet_child(alt_surebet_lists)
+
+    else:
+        return
+    print('surebet loop finished.will start valuebet loop soon.')
+
