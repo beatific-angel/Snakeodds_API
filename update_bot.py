@@ -545,3 +545,31 @@ def get_surebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie,
         return
     print('surebet loop finished.will start valuebet loop soon.')
 
+
+def valuebet_get_data(s, request_cookies_browser, userid, vbookie_id_lists, bstart):
+    #go to filter page and save filters
+    driver.get(saveurl)
+    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="mepr-account-payments"]')))
+
+    mepr_nonce = driver.find_element_by_xpath('//input[@id="mepr_profile-filtri_nonce"]').get_attribute('value')
+    filtersavedata = {
+        'mepr-process-profile-filtri': 'Y',
+        'mepr_profile-filtri_nonce': mepr_nonce,
+        '_wp_http_referer': '/account/?action=profile-filtri',
+        'importo_default':'100',
+        'arrotontamento_dafault': '1',
+        'bookmakers[]': [vbookie_id_lists],
+        'sports[]': [2,1,4,5,23]
+    }
+    driver.delete_cookie('__cf_bm')
+    driver.delete_cookie('wfwaf-authcookie-71f47a747fbb7b6570a859ec7a006d6d')
+    driver.delete_cookie('wordpress_sec_165b92c533db78e0b8c7972d9effad21')
+
+    while True:
+        event_url = f'https://www.finderbet.it/account/?action=profile-filtri'
+        
+        response = s.post(event_url, data=filtersavedata)
+        if response.status_code == 200:          
+            break
+        else:
+            print(response.status_code, response.text)
