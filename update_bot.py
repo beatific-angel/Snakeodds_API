@@ -573,3 +573,23 @@ def valuebet_get_data(s, request_cookies_browser, userid, vbookie_id_lists, bsta
             break
         else:
             print(response.status_code, response.text)
+
+    # go to surebet page
+    time.sleep(2)
+    driver.get('https://www.finderbet.it/')
+    time.sleep(1)
+    request_cookies_browser = driver.get_cookies() 
+    # go to valuebet page
+    driver.get(url2)
+    WebDriverWait(driver, 5).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="contenitoreSurebet"]')))
+    nonce_site = driver.find_element_by_id("action-set-filtri_nonce").get_attribute('value')
+
+    wp_nonce_string = driver.find_element_by_xpath('//script[@id="wp-api-request-js-extra"]').get_attribute('innerHTML')
+    wp_nonce_temp = wp_nonce_string.split('"')
+    wp_nonce = wp_nonce_temp[7]
+    cookie_cnt = len(request_cookies_browser)
+    header_cookie = ''
+    for i in range(cookie_cnt):
+        header_cookie += request_cookies_browser[i]['name'] + '=' + request_cookies_browser[i]['value'] + '; '
+
+    get_valuebetdata_api(s, nonce_site, wp_nonce, vbookie_id_lists, header_cookie)
