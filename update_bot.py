@@ -593,3 +593,31 @@ def valuebet_get_data(s, request_cookies_browser, userid, vbookie_id_lists, bsta
         header_cookie += request_cookies_browser[i]['name'] + '=' + request_cookies_browser[i]['value'] + '; '
 
     get_valuebetdata_api(s, nonce_site, wp_nonce, vbookie_id_lists, header_cookie)
+
+def get_valuebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie):
+    while True:
+        s = requests.Session()
+        headers = {
+            "x-wp-nonce": wp_nonce,
+            "cookie": header_cookie
+        }
+        cnt_bk_lists = len(bookie_id_lists)
+        bk_url_header = ''
+        for m in range(cnt_bk_lists):
+            bk_url_header += f'&bookmakers[]={bookie_id_lists[m]}'
+
+        event_url = f'https://www.finderbet.it/wp-json/valuebet/v1/getItems?surebet_do_set_filter=YEPPA&action-set-filtri_nonce=c0e2668683&_wp_http_referer=/valuebet/{bk_url_header}&data_evento_da=&data_evento_a=&profitto_min=&orderBy=profitto&order=desc&page=1'
+
+        response = s.get(event_url, headers=headers)
+        if response.status_code == 200:
+            break
+        else:
+            print(response.status_code, response.text)
+    result  = response.json()
+    bet_items = result['items']
+    decrypt_item_res = base64.b64decode(bet_items)
+    items = decrypt_item_res.decode()
+    valuebet_result = json.loads(items)
+    print('valuebet loop started')
+    valuebet_lists = []
+    
