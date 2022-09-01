@@ -620,4 +620,36 @@ def get_valuebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie
     valuebet_result = json.loads(items)
     print('valuebet loop started')
     valuebet_lists = []
-    
+    if len(valuebet_result) > 0:
+        for i in range(len(valuebet_result)):
+            try:
+                time.sleep(0.2)
+                selected_item = valuebet_result[i]
+                valuebet_id = selected_item['valuebet_id']
+                percent = selected_item['valore_surebet']
+                sport = selected_item['sport']
+                bet_time = selected_item['datetime']
+                cha_id = selected_item['cha_id']
+                group_name = selected_item['gruppo_evento']
+                event_name = selected_item['nome_evento']
+                selected_bookmaker = selected_item['bookmakers']
+                bet_koef = selected_bookmaker[0]['value']
+                bet_bk = selected_bookmaker[0]['bname']
+                bet_market_val = selected_bookmaker[0]['sigla']
+                bet_desc = selected_bookmaker[0]['desc']
+
+                created_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                updated_at = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+                val_params = (valuebet_id, cha_id, percent, sport, event_name, \
+                              group_name, bet_time, bet_bk, bet_market_val, bet_koef,bet_desc,
+                              created_at, updated_at)
+                #valuebet_lists.append(val_params)
+                set_valuebet_main(val_params)
+            except Exception as e:
+                print('f', f' Exception: {repr(e)}')
+                pass
+
+        print('valuebet loop finished')
+    else:
+        return
