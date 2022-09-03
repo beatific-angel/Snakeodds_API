@@ -653,3 +653,67 @@ def get_valuebetdata_api(s, nonce_site, wp_nonce, bookie_id_lists, header_cookie
         print('valuebet loop finished')
     else:
         return
+
+def exchange_get_data(s, request_cookies_browser, userid, ebookie_id_lists, bstart):
+    # go to filter page and save filters
+    driver.get(saveurl)
+    WebDriverWait(driver, 120).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="mepr-account-payments"]')))
+    filtertype = 'prematch'
+    mepr_nonce = driver.find_element_by_xpath('//input[@id="mepr_profile-filtri_nonce"]').get_attribute('value')
+    filtersavedata = {
+        'mepr-process-profile-filtri': 'Y',
+        'mepr_profile-filtri_nonce': mepr_nonce,
+        '_wp_http_referer': '/account/?action=profile-filtri',
+        'importo_default':'100',
+        'arrotontamento_dafault': '1',
+        'bookmakers[]': [ebookie_id_lists],
+        'sports[]': [2,1,4,5,23]
+    }
+    driver.delete_cookie('__cf_bm')
+    driver.delete_cookie('wfwaf-authcookie-71f47a747fbb7b6570a859ec7a006d6d')
+    driver.delete_cookie('wordpress_sec_165b92c533db78e0b8c7972d9effad21')
+
+    while True:
+        event_url = f'https://www.finderbet.it/account/?action=profile-filtri'
+        
+        response = s.post(event_url, data=filtersavedata)
+        if response.status_code == 200:          
+            break
+        else:
+            print(response.status_code, response.text)
+
+    time.sleep(2)
+    driver.get('https://www.finderbet.it/')
+    time.sleep(1)
+    request_cookies_browser = driver.get_cookies()
+    # go to exchange page
+    driver.get(url3)
+    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="contenitoreSurebet"]')))
+    nonce_site = driver.find_element_by_id("action-set-filtri_nonce").get_attribute('value')
+
+    wp_nonce_string = driver.find_element_by_xpath('//script[@id="wp-api-request-js-extra"]').get_attribute('innerHTML')
+    wp_nonce_temp = wp_nonce_string.split('"')
+    wp_nonce = wp_nonce_temp[7]
+    cookie_cnt = len(request_cookies_browser)
+    header_cookie = ''
+    for i in range(cookie_cnt):
+        header_cookie += request_cookies_browser[i]['name'] + '=' + request_cookies_browser[i]['value'] + '; '
+    filtertype = 'oddsmatcher'
+    bookie_lists_tp = get_bk_lists(userid, filtertype)
+    if bookie_lists_tp != True:
+        bookie_temp = ''
+        unique_list_tp = []
+        bookie_id_lists_tp = []
+        for bookie_lists_tp_cel in bookie_lists_tp:
+            processing_bklists_tp = bookie_lists_tp_cel[4]
+            processing_bklists_tp = unserialize_array(
+                processing_bklists_tp)
+            for k, v in processing_bklists_tp.items():
+                v = int(v)
+                unique_list_tp.append(v)
+        for x in unique_list_tp:
+            if x not in bookie_id_lists_tp:
+                bookie_id_lists_tp.append(x)
+        bookie_id_lists_tp.sort()
+        if np.array_equiv(bookie_id_lists_tp, ebookie_id_lists) == True:
+            get_exchange_data_api(s, nonce_site, wp_nonce, ebookie_id_lists, header_cookie, userid, filtertype)
