@@ -1,2 +1,0 @@
-title,information,price,primary
-limit,total_by_filter,total,arbs,event_arbs,request_domain,bets,total_time,project_type,wrong_items,last_update,excluded,max_percent_by_filter,max_percent,request_time
