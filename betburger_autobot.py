@@ -25,8 +25,8 @@ from datetime import datetime, timedelta
 def getConnection():
     mydb = mysql.connector.connect(
         host="127.0.0.1",
-        user="remote_betmanager",
-        password="6Ov@4xg6",
+        user="root",
+        password="",
         database="betting"
     )
     return mydb
@@ -419,8 +419,6 @@ mainWin = driver.current_window_handle
 
 print('Sucessfully the webdriver runned.')
 
-user_email = "info@mpstoreonline.com"
-password = "Dkmp1312"
 
 
 def login():
