@@ -417,7 +417,7 @@ def login():
     # driver.find_element_by_id('betburger_user_password').send_keys(Keys.RETURN)
 
     if (len(driver.find_elements_by_xpath('//div[contains(@class, "g-recaptcha")]'))) > 0:
-        solver = TwoCaptcha('aacf25b9da54ec379de9c1d4c4aee92c')
+        solver = TwoCaptcha('')
         sitekey = driver.find_element_by_xpath('//div[contains(@class, "g-recaptcha")]').get_attribute('data-sitekey')
 
         while 1:
